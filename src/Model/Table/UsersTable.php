@@ -38,6 +38,7 @@ class UsersTable extends Table
 
         $this->hasMany('Hobbys', [
             'foreignKey' => 'user_id',
+            'dependent' => true,
         ]);
     }
 
