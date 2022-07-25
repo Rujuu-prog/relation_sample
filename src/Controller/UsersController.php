@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Users Controller
@@ -11,7 +12,16 @@ use App\Controller\AppController;
  * @method \App\Model\Entity\User[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class UsersController extends AppController
-{
+{   
+    public function initialize(){
+        $this->user_table = TableRegistry::get('users');
+    }
+    public function saveRelationalDb($data){
+        $entities = $this->user_table->newEntities($data, ['associated' => ['Hobbys']]);
+        foreach($entities as $entity){
+            $this->user_table->save($entity, ['associated' => ['Hobbys']]);
+        }
+    }
     /**
      * Index method
      *
@@ -22,6 +32,31 @@ class UsersController extends AppController
         $users = $this->paginate($this->Users);
 
         $this->set(compact('users'));
+        // テストデータ
+        $data = [
+            [
+                'name' => '山田',
+                'age' => 22,
+                'hobbys' => [
+                    [
+                        'hobby' => '読書',
+                    ],
+                ]
+            ],
+            [
+                'name' => '佐藤',
+                'age' => 21,
+                'hobbys' => [
+                    [
+                        'hobby' => 'ゲーム',
+                    ],
+                    [
+                        'hobby' => '散歩',
+                    ],
+                ]
+            ],
+        ];
+        $this->saveRelationalDb($data);
     }
 
     /**
